@@ -15,11 +15,31 @@ class Play
   attr_accessor :id, :title, :year, :playwright_id
 
   def self.find_by_title(title)
-    
+    play = PlayDBConnection.instance.execute(<<-SQL, title)
+    SELECT
+      *
+    FROM
+      plays
+    WHERE
+      title = ? 
+    SQL
+    return nil if table.length <= 0
+
+    Play.new(play.first) #play initializiation accepts a hash as an argument
   end
 
   def self.find_by_playwright(name)
+    playwright = PlayDBConnection.instance.execute(<<-SQL, name)
+    SELECT
+      *
+    FROM
+      playwrights
+    WHERE
+      name = ?
+    SQL
+    return nil if play.length <= 0
 
+    Playwright.new(playwright.first)
   end
 
   def self.all
@@ -56,4 +76,16 @@ class Play
         id = ?
     SQL
   end
+end
+
+class Playwright
+  attr_accessor :title, :birth_year
+  def initialize(options)
+    @id = options['id']
+    @name = options['name']
+    @birth_year = options['birth_year']
+  end
+
+  def insert 
+    raise "#{self} already in database" if self.id #this is checking if the id exists 
 end
